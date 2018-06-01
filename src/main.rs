@@ -27,8 +27,7 @@ fn create_flake(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
     };
 
     // check if file exists already - just return it if so
-
-    match draw(&hash) {
+    match draw(&hash, &concat!(env!("CARGO_MANIFEST_DIR"), "/images")) {
         Ok(_) => format!("{:?}", hash),
         Err(e) => format!("Error creating image: {:?}", e)
     };
@@ -58,16 +57,16 @@ fn main() {
 
         App::with_state(AppState{ template: tera })
             .middleware(middleware::Logger::default())
-            .handler("/images", fs::StaticFiles::new("images"))
+            .handler("/images", fs::StaticFiles::new(concat!(env!("CARGO_MANIFEST_DIR"), "/images")))
             .resource("/index.html", |r| r.f(|_| "Hello world"))
             // .resource("/flake", |r| r.method(http::Method::GET).f(create_flake))
             .resource("/flake/{text}", |r| r.method(http::Method::GET).f(create_flake))
             .resource("/", |r| r.method(http::Method::GET).f(index))
     })
-        .bind("127.0.0.1:8080")
+        .bind("127.0.0.1:3099")
         .unwrap()
         .start();
 
-    println!("Server started on 127.0.0.1:8080");
+    println!("Server started on 127.0.0.1:3099");
     let _ = sys.run();
 }
