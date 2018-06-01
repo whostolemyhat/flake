@@ -2,21 +2,31 @@ extern crate actix;
 extern crate actix_web;
 extern crate env_logger;
 extern crate snowflake;
+extern crate sha2;
 #[macro_use]
 extern crate tera;
 
 use actix_web::{ middleware, server, App, HttpRequest, Responder, http, HttpResponse, error, Error, fs };
-
+use sha2::{ Sha256, Digest };
 use snowflake::{ create_hash };
 use snowflake::draw::draw;
 
+// TODO move snowflake crate somewhere
+// TODO save in db?
+// TODO save as base64?
+
 fn create_flake(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
+    // TODO salt hash
     let hash = match req.match_info().get("text") {
-        Some(text) => String::from(text),
+        Some(text) => {
+            let mut hasher = Sha256::default();
+            hasher.input(text.as_bytes());
+            format!("{:x}", hasher.result())
+        },
         None => create_hash(64)
     };
 
-    // check if file exists already
+    // check if file exists already - just return it if so
 
     match draw(&hash) {
         Ok(_) => format!("{:?}", hash),
