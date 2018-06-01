@@ -1,0 +1,13 @@
+[package]
+authors = ["James Tease <james@jamestease.co.uk>"]
+name = "actix"
+version = "0.1.0"
+
+[dependencies]
+actix = "0.5.7"
+actix-web = "0.6"
+env_logger = "0.5.10"
+tera = "0.11.7"
+
+[dependencies.snowflake]
+path = "../snowflake"
