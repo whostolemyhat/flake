@@ -3,7 +3,8 @@
     {% include "form.html" %}
 
     {% if text %}
-    <p>Hash: {{ text }}</p>
-    <a href="/images/{{ text }}.png" title="Permalink to image"><img src="/images/{{ text }}.png" /></a>
+    <p>Text: {{ text }}</p>
+    <p>Hash: {{ hash }}</p>
+    <a href="/{{ text }}" title="Permalink to image"><img src="/images/{{ hash }}.png" /></a>
     {% endif %}
 {% endblock %}

@@ -15,3 +15,5 @@ TODO
 - tests
 - base64 to png/vice versa
 - CSRF/CORS/CSP
+- different length hash
+- colour

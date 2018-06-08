@@ -21,8 +21,10 @@ use snowflake::draw::draw;
 
 fn create_flake(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
     // TODO salt hash
+    let mut text_str = String::new();
     let hash = match req.match_info().get("text") {
         Some(text) => {
+            text_str = text.to_string();
             let mut hasher = Sha256::default();
             hasher.input(text.as_bytes());
             format!("{:x}", hasher.result())
@@ -37,7 +39,8 @@ fn create_flake(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
     };
 
     let mut ctx = tera::Context::new();
-    ctx.add("text", &hash.to_owned());
+    ctx.add("text", &text_str);
+    ctx.add("hash", &hash.to_owned());
     let s = req.state().template.render("flake.html", &ctx).map_err(|_| error::ErrorInternalServerError("Template error"))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
@@ -45,7 +48,7 @@ fn create_flake(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
 fn show_form(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
     let ctx = tera::Context::new();
 
-    let s = req.state().template.render("form.html", &ctx).map_err(|_| error::ErrorInternalServerError("Template error"))?;
+    let s = req.state().template.render("flake.html", &ctx).map_err(|_| error::ErrorInternalServerError("Template error"))?;
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
@@ -67,7 +70,8 @@ fn form_flake(data: (Form<Flake>, HttpRequest<AppState>)) -> Result<HttpResponse
     };
 
     let mut ctx = tera::Context::new();
-    ctx.add("text", &hash.to_owned());
+    ctx.add("text", &data.0.name);
+    ctx.add("hash", &hash.to_owned());
     let s = data.1.state().template.render("flake.html", &ctx).map_err(|_| error::ErrorInternalServerError("Template error")).unwrap();
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
