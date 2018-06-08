@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Snowflake</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="/css/normalise.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
+  </head>
+  <body>
+    {% block header %}{% endblock %}
+
+    <main class="main">
+      {% block body %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+    {% block footer %}
+    <h2>What is this?</h2>
+    <p>Site created by <a href="https://www.jamestease.co.uk" title="James' site">James Baum</a>.</p>
+    <p><a href="https://github.com/joshleeb/snowhash" title="Snowhash library" target="_blank">Snowflake generation library by Josh Leeb-du Toit</a>.</p>
+    <p>
+    {% endblock %}
+    </footer>
+  </body>
+</html>

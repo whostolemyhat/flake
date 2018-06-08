@@ -1,0 +1,7 @@
+{% extends "layouts/base.html" %}
+
+{% block body %}
+    {% for img in images %}
+    <img src="/images/{{ img }}" />
+    {% endfor %}
+{% endblock %}

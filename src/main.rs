@@ -10,7 +10,7 @@ extern crate serde;
 extern crate serde_derive;
 extern crate serde_json;
 
-use actix_web::{ middleware, server, App, HttpRequest, Responder, http, HttpResponse, error, Error, fs, Form };
+use actix_web::{ middleware, server, App, HttpRequest, http, HttpResponse, error, Error, fs, Form };
 use sha2::{ Sha256, Digest };
 use snowflake::{ create_hash };
 use snowflake::draw::draw;
@@ -72,9 +72,25 @@ fn form_flake(data: (Form<Flake>, HttpRequest<AppState>)) -> Result<HttpResponse
     Ok(HttpResponse::Ok().content_type("text/html").body(s))
 }
 
-// fn index(_req: HttpRequest<AppState>) -> impl Responder {
-//     "Hi!"
-// }
+fn list_images(req: HttpRequest<AppState>) -> Result<HttpResponse, Error> {
+    let folder = concat!(env!("CARGO_MANIFEST_DIR"), "/images");
+    let mut images: Vec<String> = vec![];
+
+    // TODO don't read stuff out of the dir
+    for image in ::std::fs::read_dir(folder).expect("Can't read folder") {
+        let image = image.expect("error");
+        match image.path().file_name() {
+            Some(name) => images.push(name.to_str().unwrap().to_string()),
+            None => ()
+        };
+    }
+
+    // get all images in folder
+    let mut ctx = tera::Context::new();
+    ctx.add("images", &images);
+    let s = req.state().template.render("all-images.html", &ctx).map_err(|_| error::ErrorInternalServerError("Template error")).unwrap();
+    Ok(HttpResponse::Ok().content_type("text/html").body(s))
+}
 
 struct AppState {
     template: tera::Tera
@@ -91,19 +107,18 @@ fn main() {
         App::with_state(AppState{ template: tera })
             .middleware(middleware::Logger::default())
             .handler("/images", fs::StaticFiles::new(concat!(env!("CARGO_MANIFEST_DIR"), "/images")))
-            // .resource("/index.html", |r| r.f(|_| "Hello world"))
-            // .resource("/flake", |r| r.method(http::Method::GET).f(create_flake))
+            .handler("/css", fs::StaticFiles::new(concat!(env!("CARGO_MANIFEST_DIR"), "/public/css")))
             .resource("/", |r| {
                 r.method(http::Method::GET).f(show_form);
                 r.post().with(form_flake);
             })
+            .resource("/all", |r| r.get().f(list_images))
             .resource("/{text}", |r| r.get().f(create_flake))
-            // .resource("/", |r| r.method(http::Method::GET).f(index))
     })
-        .bind("127.0.0.1:3099")
+        .bind("0.0.0.0:3099")
         .unwrap()
         .start();
 
-    println!("Server started on 127.0.0.1:3099");
+    println!("Server started on 0.0.0.0:3099");
     let _ = sys.run();
 }

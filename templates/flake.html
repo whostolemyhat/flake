@@ -1,11 +1,9 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Flake</title>
-    </head>
-    <body>
-        <p>Hash: {{ text }}</p>
-        <img src="/images/{{ text }}.png" />
-    </body>
-</html>
+{% extends "layouts/base.html" %}
+{% block body %}
+    {% include "form.html" %}
+
+    {% if text %}
+    <p>Hash: {{ text }}</p>
+    <img src="/images/{{ text }}.png" />
+    {% endif %}
+{% endblock %}
