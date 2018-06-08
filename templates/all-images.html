@@ -2,6 +2,6 @@
 
 {% block body %}
     {% for img in images %}
-    <img src="/images/{{ img }}" />
+    <a href="/images/{{ img }}" title="Permalink to image"><img src="/images/{{ img }}" /></a>
     {% endfor %}
 {% endblock %}

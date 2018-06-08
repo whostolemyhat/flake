@@ -4,6 +4,6 @@
 
     {% if text %}
     <p>Hash: {{ text }}</p>
-    <img src="/images/{{ text }}.png" />
+    <a href="/images/{{ text }}.png" title="Permalink to image"><img src="/images/{{ text }}.png" /></a>
     {% endif %}
 {% endblock %}
