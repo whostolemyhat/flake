@@ -1,0 +1,8 @@
+[package]
+authors = ["James Tease <james@jamestease.co.uk>"]
+name = "snowflake"
+version = "0.1.0"
+
+[dependencies]
+cairo-rs = { version = "0.3", features = ["png"] }
+rand = "0.4"
